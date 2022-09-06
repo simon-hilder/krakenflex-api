@@ -1,7 +1,7 @@
 import http from 'http';
 import express, { Express } from 'express';
 import morgan from 'morgan';
-import routes from './routes/outages';
+import routes from './router';
 
 const router: Express = express();
 

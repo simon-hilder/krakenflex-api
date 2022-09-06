@@ -9,8 +9,8 @@ interface Outage {
 }
 
 const getOutages = async (req: Request, res: Response, next: NextFunction) => {
-    let result: AxiosResponse = await axios.get(`${BaseUrl}/outages`, ApiConfig);
-    let outages: [Outage] = result.data;
+    const result: AxiosResponse = await axios.get(`${BaseUrl}/outages`, ApiConfig);
+    const outages: [Outage] = result.data;
     return res.status(200).json({
         'outages': outages
     });
