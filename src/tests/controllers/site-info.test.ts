@@ -10,7 +10,7 @@ let mockResponse: Partial<Response>;
 let mockNext: Partial<NextFunction>;
 const mockAxios = new MockAdapter(axios);
 
-describe('getOutages', () => {
+describe('getSiteInfoById', () => {
     test('Calls expected KrakenFlex API endpoint', () => {
         const spy = jest.spyOn(axios, 'get');
         mockAxios.onGet().reply(200, {});
