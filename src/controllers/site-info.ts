@@ -13,6 +13,8 @@ interface SiteInfo {
     devices: [Device]
 }
 
+const badSiteIdError = "Invalid Site Id provided";
+
 const getSiteInfoById = async (req: Request, res: Response, next: NextFunction) => {
     const siteId = req.query['site-id'];
     if (siteId) {
@@ -24,7 +26,12 @@ const getSiteInfoById = async (req: Request, res: Response, next: NextFunction) 
         const siteInfo: [SiteInfo] = success.data;
         res.status(200)
         res.send(siteInfo);
+        return res;
+    } else {
+        res.status(400);
+        res.send(badSiteIdError);
+        return res;
     }
 }
 
-export { SiteInfo, getSiteInfoById }
+export { SiteInfo, badSiteIdError, getSiteInfoById }
