@@ -2,7 +2,7 @@ import { describe, expect, test } from '@jest/globals';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Request, Response, NextFunction } from 'express';
-import { Outage, getOutages } from '../../controllers/outage';
+import { SiteInfo, getSiteInfoById } from '../../controllers/site-info';
 import { BaseUrl, ApiConfig } from '../../constants';
 
 let mockRequest: Partial<Request>;
@@ -10,8 +10,13 @@ let mockResponse: Partial<Response>;
 let mockNext: Partial<NextFunction>;
 const mockAxios = new MockAdapter(axios);
 
+const siteId = 'test'
 beforeEach(() => {
-    mockRequest = {};
+    mockRequest = {
+        query: {
+            'site-id': siteId
+        }
+    };
 });
 
 describe('getOutages', () => {
@@ -22,24 +27,27 @@ describe('getOutages', () => {
             status: jest.fn(),
             send: jest.fn()
         }
-        getOutages(mockRequest as Request, mockResponse as Response, mockNext as NextFunction);
-        expect(spy).toHaveBeenCalledWith(`${BaseUrl}/outages`, ApiConfig);
+        getSiteInfoById(mockRequest as Request, mockResponse as Response, mockNext as NextFunction);
+        expect(spy).toHaveBeenCalledWith(`${BaseUrl}/site-info/${siteId}`, ApiConfig);
     });
 
     test('Returns 200 with Outages data, on success response from KrakenFlex API', async () => {
-        const outages: [Outage] = [{
+        const siteInfo: [SiteInfo] = [{
             id: 'test',
-            begin: 'test',
-            end: 'test'
+            name: 'test',
+            devices: [{
+                id: 'test',
+                name: 'test'
+            }]
         }];
-        mockAxios.onGet().reply(200, outages);
+        mockAxios.onGet().reply(200, siteInfo);
         mockResponse = {
             status: jest.fn(),
             send: jest.fn()
         }
         const spy = jest.spyOn(mockResponse, 'send');
-        await getOutages(mockRequest as Request, mockResponse as Response, mockNext as NextFunction);
-        expect(spy).toHaveBeenCalledWith(outages);
+        await getSiteInfoById(mockRequest as Request, mockResponse as Response, mockNext as NextFunction);
+        expect(spy).toHaveBeenCalledWith(siteInfo);
     });
 
     test('Returns status code with error message, on failed response from KrakenFlex API', async () => {
@@ -50,7 +58,7 @@ describe('getOutages', () => {
             send: jest.fn()
         }
         const spy = jest.spyOn(mockResponse, 'send');
-        await getOutages(mockRequest as Request, mockResponse as Response, mockNext as NextFunction);
+        await getSiteInfoById(mockRequest as Request, mockResponse as Response, mockNext as NextFunction);
         expect(spy).toHaveBeenCalledWith(expectedError);
     });
 })

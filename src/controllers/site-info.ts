@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { BaseUrl, ApiConfig } from '../constants';
 
 interface Device {
@@ -16,12 +16,15 @@ interface SiteInfo {
 const getSiteInfoById = async (req: Request, res: Response, next: NextFunction) => {
     const siteId = req.query['site-id'];
     if (siteId) {
-        const result: AxiosResponse = await axios.get(`${BaseUrl}/site-info/${siteId}`, ApiConfig);
-        const siteInfo: [SiteInfo] = result.data;
-        return res.status(200).json({
-            'siteInfo': siteInfo
+        const result = await axios.get(`${BaseUrl}/site-info/${siteId}`, ApiConfig).catch((error: Error | AxiosError) => {
+            res.send(error.message);
+            return res;
         });
+        const success = result as AxiosResponse;
+        const siteInfo: [SiteInfo] = success.data;
+        res.status(200)
+        res.send(siteInfo);
     }
 }
 
-export default { getSiteInfoById }
+export { SiteInfo, getSiteInfoById }

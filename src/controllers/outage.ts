@@ -9,7 +9,7 @@ interface Outage {
 }
 
 const getOutages = async (req: Request, res: Response, next: NextFunction) => {
-    const result = await axios.get(`${BaseUrl}/outages`, ApiConfig).catch((error: Error  | AxiosError) => {
+    const result = await axios.get(`${BaseUrl}/outages`, ApiConfig).catch((error: Error | AxiosError) => {
         res.send(error.message);
         return res;
     });
