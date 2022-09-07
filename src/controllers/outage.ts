@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { BaseUrl, ApiConfig } from '../constants';
 
 interface Outage {
@@ -9,11 +9,15 @@ interface Outage {
 }
 
 const getOutages = async (req: Request, res: Response, next: NextFunction) => {
-    const result: AxiosResponse = await axios.get(`${BaseUrl}/outages`, ApiConfig);
-    const outages: [Outage] = result.data;
-    return res.status(200).json({
-        'outages': outages
+    const result = await axios.get(`${BaseUrl}/outages`, ApiConfig).catch((error: Error  | AxiosError) => {
+        res.send(error.message);
+        return res;
     });
+    const success = result as AxiosResponse;
+    const outages: [Outage] = success.data;
+    res.status(200);
+    res.send(outages);
+    return res;
 }
 
-export default { getOutages }
+export { Outage, getOutages }
